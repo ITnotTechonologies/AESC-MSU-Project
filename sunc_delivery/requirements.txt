@@ -3,7 +3,8 @@ uvicorn
 jinja2
 sqlalchemy
 psycopg2-binary
-python-jose
-passlib[bcrypt]
-pydantic-settings
 python-multipart
+passlib[argon2]==1.7.4
+argon2-cffi==23.1.0
+pydantic-settings
+itsdangerous

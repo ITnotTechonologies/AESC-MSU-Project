@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Вход — СУНЦ Доставка{% endblock %}
+
+{% block content %}
+<div class="min-h-[calc(100vh-80px)] bg-gradient-to-br from-slate-50 via-white to-sky-50">
+  <div class="mx-auto flex min-h-[calc(100vh-80px)] max-w-7xl items-center px-4 py-10 sm:px-6 lg:px-8">
+    <div class="grid w-full grid-cols-1 gap-8 lg:grid-cols-2">
+      <section class="flex items-center">
+        <div class="max-w-xl">
+          <span class="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-medium text-sky-700">
+            СУНЦ Delivery
+          </span>
+
+          <h1 class="mt-6 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+            Войдите в личный кабинет и оформляйте доставку быстрее
+          </h1>
+
+          <p class="mt-5 text-lg leading-8 text-slate-600">
+            Каталог, корзина, выбор курьера, отслеживание заказа и чат — всё в одном аккуратном интерфейсе.
+          </p>
+
+          <div class="mt-8 grid gap-4 sm:grid-cols-2">
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="text-sm font-semibold text-slate-900">Быстрый заказ</div>
+              <div class="mt-1 text-sm text-slate-600">Оформление в несколько кликов.</div>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="text-sm font-semibold text-slate-900">Статусы и чат</div>
+              <div class="mt-1 text-sm text-slate-600">Следите за заказом в реальном времени.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="flex items-center justify-center">
+        <div class="w-full max-w-md rounded-3xl border border-slate-200 bg-white/90 p-8 shadow-xl backdrop-blur">
+          <div class="mb-8">
+            <h2 class="text-2xl font-semibold text-slate-900">Вход</h2>
+            <p class="mt-2 text-sm text-slate-600">
+              Введите email и пароль, чтобы продолжить.
+            </p>
+          </div>
+
+          {% if errors and errors|length > 0 %}
+          <div class="mb-6 space-y-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {% for error in errors %}
+              <div>{{ error }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <form method="post" action="{{ url_for('login') }}" class="space-y-5">
+            <div>
+              <label for="email" class="mb-2 block text-sm font-medium text-slate-700">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+                placeholder="name@example.com"
+                class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
+              >
+            </div>
+
+            <div>
+              <label for="password" class="mb-2 block text-sm font-medium text-slate-700">Пароль</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+                placeholder="••••••••"
+                class="block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
+              >
+            </div>
+
+            <button
+              type="submit"
+              class="inline-flex w-full items-center justify-center rounded-2xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-sky-600/20 transition hover:bg-sky-700 focus:outline-none focus:ring-4 focus:ring-sky-200"
+            >
+              Войти
+            </button>
+          </form>
+
+          <div class="mt-6 text-center text-sm text-slate-600">
+            Нет аккаунта?
+            <a href="{{ url_for('register') }}" class="font-semibold text-sky-600 hover:text-sky-700">
+              Зарегистрироваться
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}

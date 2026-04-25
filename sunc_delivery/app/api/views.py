@@ -1,23 +1,17 @@
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_db, get_current_user
+from app.api.deps import get_db, get_current_user, require_user
 from app.db.models import Product
 
-templates = Jinja2Templates(directory="app/templates")
 router = APIRouter()
 
 
 @router.get("/", response_class=HTMLResponse, name="home")
-def home(
-    request: Request,
-    db: Session = Depends(get_db),
-    user=Depends(get_current_user),
-):
+def home(request: Request, db: Session = Depends(get_db), user=Depends(get_current_user)):
     products = db.query(Product).limit(6).all()
-    return templates.TemplateResponse(
+    return request.app.state.templates.TemplateResponse(
         request=request,
         name="pages/home.html",
         context={
@@ -29,6 +23,22 @@ def home(
     )
 
 
+@router.get("/profile", response_class=HTMLResponse, name="profile")
+def profile(
+    request: Request,
+    user=Depends(require_user),
+):
+    return request.app.state.templates.TemplateResponse(
+        request=request,
+        name="pages/profile.html",
+        context={
+            "request": request,
+            "user": user,
+            "recent_orders": [],
+        },
+    )
+
+
 @router.get("/catalog", response_class=HTMLResponse, name="catalog")
 def catalog(
     request: Request,
@@ -36,7 +46,7 @@ def catalog(
     user=Depends(get_current_user),
 ):
     products = db.query(Product).all()
-    return templates.TemplateResponse(
+    return request.app.state.templates.TemplateResponse(
         request=request,
         name="pages/catalog.html",
         context={
@@ -49,28 +59,12 @@ def catalog(
     )
 
 
-@router.get("/profile", response_class=HTMLResponse, name="profile")
-def profile(
-    request: Request,
-    user=Depends(get_current_user),
-):
-    return templates.TemplateResponse(
-        request=request,
-        name="pages/profile.html",
-        context={
-            "request": request,
-            "user": user,
-            "recent_orders": [],
-        },
-    )
-
-
 @router.get("/order/create", response_class=HTMLResponse, name="order_create")
 def order_create(
     request: Request,
-    user=Depends(get_current_user),
+    user=Depends(require_user),
 ):
-    return templates.TemplateResponse(
+    return request.app.state.templates.TemplateResponse(
         request=request,
         name="pages/order_create.html",
         context={
@@ -93,9 +87,9 @@ def order_create(
 @router.get("/chat", response_class=HTMLResponse, name="chat")
 def chat(
     request: Request,
-    user=Depends(get_current_user),
+    user=Depends(require_user),
 ):
-    return templates.TemplateResponse(
+    return request.app.state.templates.TemplateResponse(
         request=request,
         name="pages/chat.html",
         context={

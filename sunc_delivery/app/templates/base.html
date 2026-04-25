@@ -47,16 +47,12 @@
 
       <div class="flex items-center gap-2">
         {% if user %}
-          <div class="hidden sm:block text-right">
-            <div class="text-sm font-medium">{{ user.username }}</div>
-            <div class="text-xs text-slate-500">{{ user.role|upper }}</div>
-          </div>
-          <a href="{{ request.url_for('profile') }}" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">
-            Кабинет
-          </a>
+        <form action="{{ request.url_for('logout') }}" method="post">
+            <button type="submit">Выйти</button>
+        </form>
         {% else %}
-          <a href="{{ request.url_for('login') }}" class="rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">Вход</a>
-          <a href="{{ request.url_for('register') }}" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">Регистрация</a>
+        <a href="{{ request.url_for('login') }}">Вход</a>
+        <a href="{{ request.url_for('register') }}">Регистрация</a>
         {% endif %}
       </div>
     </div>
