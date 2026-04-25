@@ -25,17 +25,15 @@
           {{ 'Активен' if user.is_active else 'Неактивен' }}
         </span>
       </div>
-      <div class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
-        <span class="text-slate-500">Верификация</span>
-        <span class="font-semibold {% if user.is_verified %}text-emerald-700{% else %}text-amber-700{% endif %}">
-          {{ 'Подтверждён' if user.is_verified else 'Не подтверждён' }}
-        </span>
-      </div>
     </div>
 
     <div class="mt-6 flex flex-wrap gap-3">
-      <a href="{{ request.url_for('profile_edit') }}" class="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Редактировать</a>
-      <a href="{{ request.url_for('orders_history') }}" class="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">История заказов</a>
+      <a href="{{ request.url_for('catalog') }}" class="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+        В каталог
+      </a>
+      <a href="{{ request.url_for('order_create') }}" class="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+        Оформить заказ
+      </a>
     </div>
   </section>
 
@@ -45,7 +43,9 @@
         <h2 class="text-2xl font-bold text-slate-900">Последние заказы</h2>
         <p class="mt-1 text-sm text-slate-600">Быстрый доступ к истории и отслеживанию</p>
       </div>
-      <a href="{{ request.url_for('orders_history') }}" class="text-sm font-semibold text-slate-900 hover:underline">Все заказы</a>
+      <a href="{{ request.url_for('order_create') }}" class="text-sm font-semibold text-slate-900 hover:underline">
+        Создать заказ
+      </a>
     </div>
 
     <div class="mt-6 space-y-4">

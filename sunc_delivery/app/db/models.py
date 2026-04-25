@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship
 from app.db.database import Base
 import enum
 
-
 class UserRole(str, enum.Enum):
     client = "client"
     courier = "courier"
@@ -29,6 +28,10 @@ class User(Base):
     is_active = Column(Boolean, default=True, nullable=False)
 
     orders = relationship("Order", back_populates="user")
+
+    @property
+    def is_verified(self):
+        return False
 
 
 class Product(Base):
