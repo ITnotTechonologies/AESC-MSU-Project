@@ -1,15 +1,19 @@
+
+
 services:
   db:
     image: postgres:15
     container_name: sunc_db
+    restart: always
     environment:
+      POSTGRES_DB: sunc_delivery
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: sunc_delivery
     ports:
       - "5432:5432"
     volumes:
-      - ./db_init/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - postgres_data:/var/lib/postgresql/data
+      - ./db_init:/docker-entrypoint-initdb.d
 
   app:
     build: .
@@ -19,3 +23,6 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/sunc_delivery
+
+volumes:
+  postgres_data:
