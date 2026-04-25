@@ -38,11 +38,11 @@
       </a>
 
       <nav class="hidden items-center gap-1 md:flex">
-        <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if current_path == '/' %}bg-slate-100{% endif %}" href="/">Главная</a>
-        <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'catalog' in current_path %}bg-slate-100{% endif %}" href="/catalog">Каталог</a>
-        <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'orders' in current_path %}bg-slate-100{% endif %}" href="/orders/create">Оформить</a>
-        <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'profile' in current_path %}bg-slate-100{% endif %}" href="/profile">Профиль</a>
-        <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'chat' in current_path %}bg-slate-100{% endif %}" href="/chat">Чат</a>
+        <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if current_path == '/' %}bg-slate-100{% endif %}" href="{{ request.url_for('home') }}">Главная</a>
+        <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'catalog' in current_path %}bg-slate-100{% endif %}" href="{{ request.url_for('catalog') }}">Каталог</a>
+        <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'orders' in current_path %}bg-slate-100{% endif %}" href="{{ request.url_for('order_create') }}">Оформить</a>
+        <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'profile' in current_path %}bg-slate-100{% endif %}" href="{{ request.url_for('profile') }}">Профиль</a>
+        <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'chat' in current_path %}bg-slate-100{% endif %}" href="{{ request.url_for('chat') }}">Чат</a>
       </nav>
 
       <div class="flex items-center gap-2">
@@ -55,8 +55,8 @@
             Кабинет
           </a>
         {% else %}
-          <a href="/login" class="rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">Вход</a>
-          <a href="/register" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">Регистрация</a>
+          <a href="{{ request.url_for('login') }}" class="rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">Вход</a>
+          <a href="{{ request.url_for('register') }}" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">Регистрация</a>
         {% endif %}
       </div>
     </div>
@@ -71,10 +71,10 @@
     <div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-6 text-sm text-slate-500 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
       <div>© {{ now.year if now else "" }} Доставка СУНЦ</div>
       <div class="flex flex-wrap gap-4">
-        <a href="/" class="hover:text-slate-900">Главная</a>
-        <a href="/catalog" class="hover:text-slate-900">Каталог</a>
-        <a href="/profile" class="hover:text-slate-900">Профиль</a>
-        <a href="/chat" class="hover:text-slate-900">Чат</a>
+        <a href="{{ request.url_for('home') }}" class="hover:text-slate-900">Главная</a>
+        <a href="{{ request.url_for('catalog') }}" class="hover:text-slate-900">Каталог</a>
+        <a href="{{ request.url_for('profile') }}" class="hover:text-slate-900">Профиль</a>
+        <a href="{{ request.url_for('chat') }}" class="hover:text-slate-900">Чат</a>
       </div>
     </div>
   </footer>

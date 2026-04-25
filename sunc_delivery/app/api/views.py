@@ -1,40 +1,108 @@
-from pathlib import Path
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from app.db.models import Product as ProductModel
-from app.api.deps import get_db
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-templates_dir = BASE_DIR / "templates"
+from app.api.deps import get_db, get_current_user
+from app.db.models import Product
 
-env = Environment(
-    loader=FileSystemLoader(str(templates_dir)),
-    autoescape=select_autoescape(["html", "xml"]),
-    cache_size=0,
-)
-
+templates = Jinja2Templates(directory="app/templates")
 router = APIRouter()
 
-@router.get("/", name="home")
-def home(request: Request, db: Session = Depends(get_db)):
-    html = env.get_template("pages/home.html").render(
-        {"request": request, "products": []}
-    )
-    return HTMLResponse(html)
 
-@router.get("/catalog", name="catalog")
-def catalog(request: Request, db: Session = Depends(get_db)):
-    products = db.query(ProductModel).all()
-    html = env.get_template("pages/catalog.html").render(
-        {"request": request, "products": products}
+@router.get("/", response_class=HTMLResponse, name="home")
+def home(
+    request: Request,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
+):
+    products = db.query(Product).limit(6).all()
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/home.html",
+        context={
+            "request": request,
+            "user": user,
+            "popular_products": products,
+            "couriers": [],
+        },
     )
-    return HTMLResponse(html)
 
-@router.get("/orders/create", name="order_create")
-def order_create(request: Request, db: Session = Depends(get_db)):
-    html = env.get_template("pages/order_create.html").render(
-        {"request": request}
+
+@router.get("/catalog", response_class=HTMLResponse, name="catalog")
+def catalog(
+    request: Request,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
+):
+    products = db.query(Product).all()
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/catalog.html",
+        context={
+            "request": request,
+            "products": products,
+            "categories": [],
+            "filters": {},
+            "user": user,
+        },
     )
-    return HTMLResponse(html)
+
+
+@router.get("/profile", response_class=HTMLResponse, name="profile")
+def profile(
+    request: Request,
+    user=Depends(get_current_user),
+):
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/profile.html",
+        context={
+            "request": request,
+            "user": user,
+            "recent_orders": [],
+        },
+    )
+
+
+@router.get("/order/create", response_class=HTMLResponse, name="order_create")
+def order_create(
+    request: Request,
+    user=Depends(get_current_user),
+):
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/order_create.html",
+        context={
+            "request": request,
+            "user": user,
+            "cart_items": [],
+            "couriers": [],
+            "delivery_points": [
+                "Главный корпус",
+                "Общежитие",
+                "Столовая",
+                "Библиотека",
+            ],
+            "total_items": 0,
+            "total_price": 0,
+        },
+    )
+
+
+@router.get("/chat", response_class=HTMLResponse, name="chat")
+def chat(
+    request: Request,
+    user=Depends(get_current_user),
+):
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/chat.html",
+        context={
+            "request": request,
+            "user": user,
+            "order": None,
+            "courier": None,
+            "messages": [],
+        },
+    )

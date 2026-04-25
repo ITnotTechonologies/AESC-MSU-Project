@@ -9,4 +9,13 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./db_init/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db_init/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  app:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/sunc_delivery
