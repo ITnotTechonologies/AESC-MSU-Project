@@ -1,0 +1,22 @@
+<article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-soft">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div class="space-y-2">
+      <div class="flex items-center gap-3">
+        <h3 class="text-base font-semibold">Заказ #{{ order.id }}</h3>
+        {% include "partials/_status_badge.html" with context %}
+      </div>
+      <div class="text-sm text-slate-600">{{ order.created_at.strftime('%d.%m.%Y %H:%M') if order.created_at else '' }}</div>
+      <div class="text-sm text-slate-600">Точка: {{ order.delivery_point or 'Не указана' }}</div>
+    </div>
+
+    <div class="text-right">
+      <div class="text-sm text-slate-500">Сумма</div>
+      <div class="text-2xl font-bold text-slate-900">{{ order.total_price }} ₽</div>
+    </div>
+  </div>
+
+  <div class="mt-5 flex flex-wrap gap-3">
+    <a href="{{ request.url_for('order_track', id=order.id) }}" class="rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800">Отследить</a>
+    <a href="{{ request.url_for('chat', order_id=order.id) }}" class="rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Чат</a>
+  </div>
+</article>

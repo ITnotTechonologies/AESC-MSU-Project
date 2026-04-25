@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ru" class="h-full scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>{% block title %}Доставка СУНЦ{% endblock %}</title>
+  <meta name="description" content="Сайт доставки для СУНЦ: каталог, оформление заказа, отслеживание и чат с курьером." />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          boxShadow: {
+            soft: "0 10px 30px rgba(15, 23, 42, 0.08)"
+          }
+        }
+      }
+    }
+  </script>
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-full bg-slate-50 text-slate-900 antialiased">
+  {% set current_path = request.url.path if request else '' %}
+
+  <header class="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+      <a href="{{ request.url_for('home') }}" class="flex items-center gap-3">
+        <div class="grid h-10 w-10 place-items-center rounded-2xl bg-slate-900 text-white shadow-soft">
+          <span class="text-lg font-bold">S</span>
+        </div>
+        <div>
+          <div class="text-sm font-semibold leading-tight">Доставка СУНЦ</div>
+          <div class="text-xs text-slate-500">MVP для учебного проекта</div>
+        </div>
+      </a>
+
+      <nav class="hidden items-center gap-1 md:flex">
+        <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if current_path == '/' %}bg-slate-100{% endif %}" href="/">Главная</a>
+        <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'catalog' in current_path %}bg-slate-100{% endif %}" href="/catalog">Каталог</a>
+        <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'orders' in current_path %}bg-slate-100{% endif %}" href="/orders/create">Оформить</a>
+        <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'profile' in current_path %}bg-slate-100{% endif %}" href="/profile">Профиль</a>
+        <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'chat' in current_path %}bg-slate-100{% endif %}" href="/chat">Чат</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        {% if user %}
+          <div class="hidden sm:block text-right">
+            <div class="text-sm font-medium">{{ user.username }}</div>
+            <div class="text-xs text-slate-500">{{ user.role|upper }}</div>
+          </div>
+          <a href="{{ request.url_for('profile') }}" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">
+            Кабинет
+          </a>
+        {% else %}
+          <a href="/login" class="rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">Вход</a>
+          <a href="/register" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">Регистрация</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    {% include "partials/_flash.html" %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="border-t border-slate-200 bg-white">
+    <div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-6 text-sm text-slate-500 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+      <div>© {{ now.year if now else "" }} Доставка СУНЦ</div>
+      <div class="flex flex-wrap gap-4">
+        <a href="/" class="hover:text-slate-900">Главная</a>
+        <a href="/catalog" class="hover:text-slate-900">Каталог</a>
+        <a href="/profile" class="hover:text-slate-900">Профиль</a>
+        <a href="/chat" class="hover:text-slate-900">Чат</a>
+      </div>
+    </div>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

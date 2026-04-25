@@ -1,0 +1,39 @@
+<article class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-soft transition hover:-translate-y-0.5 hover:shadow-lg">
+  <a href="{{ request.url_for('product_detail', id=product.id) if product.id is defined else '#' }}" class="block">
+    <div class="aspect-[4/3] bg-slate-100">
+      {% if product.image_url %}
+        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="h-full w-full object-cover" />
+      {% else %}
+        <div class="grid h-full w-full place-items-center text-slate-400">
+          <span class="text-sm">Нет фото</span>
+        </div>
+      {% endif %}
+    </div>
+  </a>
+
+  <div class="space-y-4 p-5">
+    <div class="space-y-2">
+      <div class="flex items-start justify-between gap-3">
+        <h3 class="text-base font-semibold leading-snug text-slate-900">{{ product.name }}</h3>
+        <div class="shrink-0 text-right text-base font-bold text-slate-900">{{ product.price }} ₽</div>
+      </div>
+      <p class="line-clamp-3 text-sm leading-6 text-slate-600">{{ product.description }}</p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">{{ product.category.name if product.category else 'Без категории' }}</span>
+      <span class="rounded-full px-3 py-1 text-xs font-medium {% if product.source_type == 'ozon' %}bg-sky-100 text-sky-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+        {{ product.source_type|upper }}
+      </span>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <a href="{{ request.url_for('order_create') }}?product_id={{ product.id }}" class="inline-flex flex-1 items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+        Добавить в заказ
+      </a>
+      <a href="{{ request.url_for('product_detail', id=product.id) if product.id is defined else '#' }}" class="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+        Подробнее
+      </a>
+    </div>
+  </div>
+</article>

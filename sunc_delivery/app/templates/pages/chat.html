@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Чат с курьером — Доставка СУНЦ{% endblock %}
+
+{% block content %}
+<div class="grid gap-6 lg:grid-cols-3">
+  <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft lg:col-span-2">
+    <div class="flex items-center justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-slate-900">Чат с курьером</h1>
+        <p class="mt-2 text-sm text-slate-600">Сообщения можно обновлять через polling каждые несколько секунд.</p>
+      </div>
+      {% if order %}
+        <a href="{{ request.url_for('order_track', id=order.id) }}" class="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+          К заказу #{{ order.id }}
+        </a>
+      {% endif %}
+    </div>
+
+    <div id="chat-box" class="mt-6 max-h-[32rem] space-y-4 overflow-y-auto rounded-3xl bg-slate-50 p-4">
+      {% for message in messages %}
+        <div class="flex {% if message.sender_id == user.id %}justify-end{% else %}justify-start{% endif %}">
+          <div class="max-w-[85%] rounded-3xl px-4 py-3 shadow-sm {% if message.sender_id == user.id %}bg-slate-900 text-white{% else %}bg-white text-slate-900{% endif %}">
+            <div class="text-sm leading-6">{{ message.text }}</div>
+            <div class="mt-2 text-xs {% if message.sender_id == user.id %}text-slate-300{% else %}text-slate-500{% endif %}">
+              {{ message.created_at.strftime('%d.%m.%Y %H:%M') if message.created_at else '' }}
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
+          Сообщений пока нет.
+        </div>
+      {% endfor %}
+    </div>
+
+    <form method="post" class="mt-5 flex gap-3">
+      <input name="text" required maxlength="1000" placeholder="Напишите сообщение курьеру..." class="min-w-0 flex-1 rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-slate-400" />
+      <button class="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+        Отправить
+      </button>
+    </form>
+  </section>
+
+  <aside class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
+    <h2 class="text-xl font-bold text-slate-900">Информация</h2>
+    <div class="mt-5 space-y-3 text-sm">
+      <div class="rounded-2xl bg-slate-50 p-4">
+        <div class="text-slate-500">Заказ</div>
+        <div class="mt-1 font-semibold text-slate-900">#{{ order.id if order else '—' }}</div>
+      </div>
+      <div class="rounded-2xl bg-slate-50 p-4">
+        <div class="text-slate-500">Курьер</div>
+        <div class="mt-1 font-semibold text-slate-900">{{ courier.user.username if courier and courier.user else 'Не назначен' }}</div>
+      </div>
+      <div class="rounded-2xl bg-slate-50 p-4">
+        <div class="text-slate-500">Обновление</div>
+        <div class="mt-1 font-semibold text-slate-900">Polling 5–10 сек</div>
+      </div>
+    </div>
+  </aside>
+</div>
+{% endblock %}

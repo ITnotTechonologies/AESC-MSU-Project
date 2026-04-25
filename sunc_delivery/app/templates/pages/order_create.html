@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Оформление заказа — Доставка СУНЦ{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+  <h1 class="text-3xl font-bold text-slate-900">Оформление заказа</h1>
+  <p class="mt-2 text-sm text-slate-600">Выберите курьера, точку доставки и оставьте комментарий.</p>
+</div>
+
+<form method="post" class="grid gap-6 lg:grid-cols-3">
+  <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft lg:col-span-2">
+    <h2 class="text-xl font-bold text-slate-900">Состав заказа</h2>
+
+    <div class="mt-5 space-y-4">
+      {% for item in cart_items %}
+        <div class="flex items-center justify-between gap-4 rounded-2xl bg-slate-50 p-4">
+          <div>
+            <div class="font-semibold text-slate-900">{{ item.product.name }}</div>
+            <div class="text-sm text-slate-500">Количество: {{ item.quantity }}</div>
+          </div>
+          <div class="text-right">
+            <div class="font-semibold text-slate-900">{{ item.price_snapshot }} ₽</div>
+            <div class="text-xs text-slate-500">за штуку</div>
+          </div>
+        </div>
+      {% else %}
+        <div class="rounded-3xl border border-dashed border-slate-300 p-8 text-sm text-slate-500">
+          Корзина пуста. Вернитесь в каталог и добавьте товары.
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="mt-6 grid gap-4 sm:grid-cols-2">
+      <div>
+        <label class="mb-2 block text-sm font-medium text-slate-700">Курьер</label>
+        <select name="courier_id" required class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-slate-400">
+          <option value="">Выберите курьера</option>
+          {% for courier in couriers %}
+            <option value="{{ courier.id }}">{{ courier.user.username if courier.user else 'Courier #' ~ courier.id }}{% if courier.rating %} — {{ courier.rating }}★{% endif %}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label class="mb-2 block text-sm font-medium text-slate-700">Точка доставки</label>
+        <select name="delivery_point" required class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-slate-400">
+          <option value="">Выберите точку</option>
+          {% for point in delivery_points %}
+            <option value="{{ point }}">{{ point }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <label class="mb-2 block text-sm font-medium text-slate-700">Комментарий к заказу</label>
+      <textarea name="comment" rows="4" placeholder="Например: оставить у охраны / позвонить перед доставкой" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-slate-400"></textarea>
+    </div>
+  </section>
+
+  <aside class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
+    <h2 class="text-xl font-bold text-slate-900">Итог</h2>
+
+    <div class="mt-5 space-y-3 text-sm">
+      <div class="flex items-center justify-between">
+        <span class="text-slate-500">Товары</span>
+        <span class="font-semibold text-slate-900">{{ total_items }} шт.</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-slate-500">Сумма</span>
+        <span class="font-semibold text-slate-900">{{ total_price }} ₽</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-slate-500">Доставка</span>
+        <span class="font-semibold text-slate-900">Внутри СУНЦ</span>
+      </div>
+    </div>
+
+    <button type="submit" class="mt-6 w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+      Подтвердить заказ
+    </button>
+
+    <p class="mt-4 text-xs leading-5 text-slate-500">
+      После отправки заказа можно отслеживать статус и писать курьеру в чате.
+    </p>
+  </aside>
+</form>
+{% endblock %}
