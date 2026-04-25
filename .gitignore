@@ -1,0 +1,26 @@
+# Obsidian
+.obsidian/
+
+# Python
+__pycache__/
+*.py[cod]
+*.env
+venv/
+.venv/
+*.egg-info/
+
+# Node.js / React
+node_modules/
+build/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
