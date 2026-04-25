@@ -30,9 +30,23 @@
               "icon": "lucide-git-fork",
               "title": "Graph view"
             }
+          },
+          {
+            "id": "d7fa48d0f753fa38",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Что сделано.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Что сделано"
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -191,13 +205,14 @@
       "bases:Create new base": false
     }
   },
-  "active": "b5cd30366056c4cf",
+  "active": "d7fa48d0f753fa38",
   "lastOpenFiles": [
+    "Проект ёпта.md",
+    "Что сделано.md",
+    "ТЗ.md",
     "План по таймлайну.md",
     "План на 3 дня для сайта доставки в СУНЦ на FastAPI + Jinja2.md",
     "Общие задачи.md",
-    "ТЗ.md",
-    "Проект ёпта.md",
     "Welcome.md"
   ]
 }
