@@ -1,4 +1,3 @@
-<!-- app/templates/pages/order_create.html -->
 {% extends "base.html" %}
 {% block title %}Оформление заказа — Доставка СУНЦ{% endblock %}
 
@@ -8,6 +7,7 @@
   <p class="mt-2 text-sm text-slate-600">Проверьте корзину, выберите курьера и точку доставки.</p>
 </div>
 
+{% if cart_items %}
 <div class="grid gap-6 lg:grid-cols-3">
   <section class="space-y-4 lg:col-span-2">
     {% for item in cart_items %}
@@ -19,21 +19,24 @@
                 <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" class="h-full w-full object-cover">
               {% endif %}
             </div>
+
             <div>
               <div class="font-semibold text-slate-900">{{ item.product.name }}</div>
-              <div class="mt-1 text-sm text-slate-500">{{ item.product.description }}</div>
+              {% if item.product.description %}
+                <div class="mt-1 text-sm text-slate-500">{{ item.product.description }}</div>
+              {% endif %}
               <div class="mt-2 text-sm text-slate-600">{{ item.product.price }} ₽ за штуку</div>
             </div>
           </div>
 
-          <div class="flex items-center gap-3">
+          <div class="flex flex-wrap items-center gap-3">
             <form method="post" action="{{ request.url_for('cart_update', product_id=item.product.id) }}" class="flex items-center gap-2">
               <button name="delta" value="-1" class="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 text-lg font-semibold text-slate-700 hover:bg-slate-50">−</button>
               <div class="min-w-10 text-center text-sm font-semibold text-slate-900">{{ item.quantity }}</div>
               <button name="delta" value="1" class="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 text-lg font-semibold text-slate-700 hover:bg-slate-50">+</button>
             </form>
 
-            <div class="w-24 text-right">
+            <div class="w-28 text-right">
               <div class="text-sm font-semibold text-slate-900">{{ item.line_total }} ₽</div>
             </div>
 
@@ -45,14 +48,10 @@
           </div>
         </div>
       </article>
-    {% else %}
-      <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500 shadow-soft">
-        Корзина пуста. Добавьте товары из каталога.
-      </div>
     {% endfor %}
   </section>
 
-  <aside class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
+  <aside class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft h-fit">
     <h2 class="text-xl font-bold text-slate-900">Итог</h2>
 
     <div class="mt-5 space-y-3 text-sm">
@@ -66,16 +65,24 @@
       </div>
     </div>
 
+    <form method="post" action="{{ request.url_for('cart_clear') }}" class="mt-4">
+      <button type="submit" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+        Очистить корзину
+      </button>
+    </form>
+
     <form method="post" action="/orders/create" class="mt-6 space-y-4">
       <div>
-        <label class="mb-2 block text-sm font-medium text-slate-700">Курьер</label>
-        <select name="courier_id" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-slate-400">
-          <option value="">Выберите курьера</option>
-          {% for courier in couriers %}
-            <option value="{{ courier.id }}">{{ courier.user.username if courier.user else 'Courier #' ~ courier.id }}</option>
-          {% endfor %}
-        </select>
-      </div>
+  <label class="mb-2 block text-sm font-medium text-slate-700">Курьер</label>
+  <select name="courier_id" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-slate-400">
+    <option value="">Выберите курьера</option>
+    {% for courier in couriers %}
+      <option value="{{ courier.id }}">
+        {{ courier.user.username }}
+      </option>
+    {% endfor %}
+  </select>
+</div>
 
       <div>
         <label class="mb-2 block text-sm font-medium text-slate-700">Точка доставки</label>
@@ -97,4 +104,12 @@
     </form>
   </aside>
 </div>
+{% else %}
+  <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center shadow-soft">
+    <p class="text-sm text-slate-500">Корзина пуста. Добавьте товары из каталога.</p>
+    <a href="{{ request.url_for('catalog') }}" class="mt-4 inline-flex rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white hover:bg-slate-800">
+      Перейти в каталог
+    </a>
+  </div>
+{% endif %}
 {% endblock %}

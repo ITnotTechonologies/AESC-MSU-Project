@@ -501,3 +501,39 @@ WHERE c.slug = 'bakaleya'
       WHERE p.name = 'Соль 4Life Морская йодированная мелкая 1кг'
         AND p.category_id = c.id
   );
+
+  WITH new_users AS (
+    INSERT INTO users (
+        email,
+        username,
+        hashed_password,
+        role,
+        is_active,
+        is_verified
+    )
+    VALUES
+        ('courier1@sunc.local', 'Курьер 1', '$2b$12$demo_hash_courier1', 'courier', TRUE, TRUE),
+        ('courier2@sunc.local', 'Курьер 2', '$2b$12$demo_hash_courier2', 'courier', TRUE, TRUE),
+        ('courier3@sunc.local', 'Курьер 3', '$2b$12$demo_hash_courier3', 'courier', TRUE, TRUE),
+        ('courier4@sunc.local', 'Курьер 4', '$2b$12$demo_hash_courier4', 'courier', TRUE, TRUE),
+        ('courier5@sunc.local', 'Курьер 5', '$2b$12$demo_hash_courier5', 'courier', TRUE, TRUE)
+    RETURNING id, email
+)
+INSERT INTO couriers (
+    user_id,
+    is_approved,
+    rating,
+    description
+)
+SELECT
+    id,
+    TRUE,
+    5.00,
+    CASE email
+        WHEN 'courier1@sunc.local' THEN 'Быстрый и аккуратный курьер'
+        WHEN 'courier2@sunc.local' THEN 'Курьер для срочных заказов'
+        WHEN 'courier3@sunc.local' THEN 'Курьер с опытом работы по территории СУНЦ'
+        WHEN 'courier4@sunc.local' THEN 'Ответственный и вежливый курьер'
+        WHEN 'courier5@sunc.local' THEN 'Курьер на вечерние доставки'
+    END
+FROM new_users;
