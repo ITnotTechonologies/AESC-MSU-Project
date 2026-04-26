@@ -502,7 +502,11 @@ WHERE c.slug = 'bakaleya'
         AND p.category_id = c.id
   );
 
-  WITH new_users AS (
+-- 5 курьеров с паролем 12345678
+
+-- 5 курьеров с паролем 12345678
+
+WITH new_users AS (
     INSERT INTO users (
         email,
         username,
@@ -512,11 +516,11 @@ WHERE c.slug = 'bakaleya'
         is_verified
     )
     VALUES
-        ('courier1@sunc.local', 'Курьер 1', '$2b$12$demo_hash_courier1', 'courier', TRUE, TRUE),
-        ('courier2@sunc.local', 'Курьер 2', '$2b$12$demo_hash_courier2', 'courier', TRUE, TRUE),
-        ('courier3@sunc.local', 'Курьер 3', '$2b$12$demo_hash_courier3', 'courier', TRUE, TRUE),
-        ('courier4@sunc.local', 'Курьер 4', '$2b$12$demo_hash_courier4', 'courier', TRUE, TRUE),
-        ('courier5@sunc.local', 'Курьер 5', '$2b$12$demo_hash_courier5', 'courier', TRUE, TRUE)
+        ('courier1@sunc.local', 'Курьер 1', '$argon2id$v=19$m=65536,t=3,p=4$IxVXMRIwMPbWXvsMMloVlw$dvHAev1SsT+yLSf3OQ8rlFIabr8Q3f+6zdjLVGmMwVs', 'courier', TRUE, TRUE),
+        ('courier2@sunc.local', 'Курьер 2', '$argon2id$v=19$m=65536,t=3,p=4$SWM9YCXk/0RpOW6Ko02NPw$W7DKYLYdj/kW58ntZJxl8te6h/uU6kcHWU/TVz79nMA', 'courier', TRUE, TRUE),
+        ('courier3@sunc.local', 'Курьер 3', '$argon2id$v=19$m=65536,t=3,p=4$9Kl6tufcFHIQfQhCybdJAQ$E1OgD57zVTIMhlPvdBid9RVP+KN8kVH6BvoMaBG3cBY', 'courier', TRUE, TRUE),
+        ('courier4@sunc.local', 'Курьер 4', '$argon2id$v=19$m=65536,t=3,p=4$WKmfwwicZyu+OzZAlJMUpQ$7Zlz9JJHq2nXkWB7NvDudUzzVeWNjfUOufPsxSWYnrA', 'courier', TRUE, TRUE),
+        ('courier5@sunc.local', 'Курьер 5', '$argon2id$v=19$m=65536,t=3,p=4$XKZ/TLWC3I8WoGmUY52qJQ$54rbMVuyFUzsSGTrftdFfWjvzjrW/PgJPQr3Nc1HgsA', 'courier', TRUE, TRUE)
     RETURNING id, email
 )
 INSERT INTO couriers (
@@ -535,5 +539,6 @@ SELECT
         WHEN 'courier3@sunc.local' THEN 'Курьер с опытом работы по территории СУНЦ'
         WHEN 'courier4@sunc.local' THEN 'Ответственный и вежливый курьер'
         WHEN 'courier5@sunc.local' THEN 'Курьер на вечерние доставки'
+        ELSE 'Тестовый курьер'
     END
 FROM new_users;
