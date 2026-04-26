@@ -278,14 +278,11 @@ def orders_create(
     )
 
     db.commit()
-
-    # Очистить корзину
     request.session["cart"] = {}
 
-    # Через минуту заказ станет delivered
     background_tasks.add_task(complete_order_later, order.id)
 
-    return RedirectResponse(url="/orders", status_code=303)
+    return RedirectResponse(url=request.url_for("profile"), status_code=303)
 
 @router.get("/", response_class=HTMLResponse, name="home")
 def home(
@@ -326,7 +323,45 @@ def catalog(
     )
 
 
-@router.get("/profile")
+
+
+@router.get("/order/create", response_class=HTMLResponse, name="order_create")
+def order_create(
+    request: Request,
+    db: Session = Depends(get_db),
+    user=Depends(require_user),
+):
+    cart = _get_cart(request)
+    cart_items = _load_cart_items(db, cart)
+    total_price = sum((item["line_total"] for item in cart_items), Decimal("0.00"))
+
+    couriers = (
+        db.query(Courier)
+        .filter(Courier.is_approved.is_(True))
+        .all()
+    )
+
+    return request.app.state.templates.TemplateResponse(
+        request=request,
+        name="pages/order_create.html",
+        context={
+            "request": request,
+            "user": user,
+            "cart_items": cart_items,
+            "total_items": _cart_count(cart),
+            "total_price": total_price,
+            "couriers": couriers,
+            "delivery_points": [
+                "Главный корпус",
+                "Общежитие",
+                "Столовая",
+                "Библиотека",
+            ],
+        },
+    )
+
+
+@router.get("/profile", name="profile")
 def profile(
     request: Request,
     db: Session = Depends(get_db),
@@ -354,11 +389,13 @@ def profile(
         )
 
     return request.app.state.templates.TemplateResponse(
-        "pages/profile.html",
-        {
+        request=request,
+        name="pages/profile.html",
+        context={
             "request": request,
             "user": user,
             "orders": orders,
+            "recent_orders": orders,
         },
     )
 
