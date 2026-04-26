@@ -27,12 +27,12 @@
                 <h2 class="text-lg font-semibold text-slate-900">Заказ #{{ order.id }}</h2>
 
                 <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold
-                  {% if order.status == 'created' %} bg-amber-100 text-amber-800
+                  {% if order.status == 'created' or order.status == 'pending_courier' %} bg-amber-100 text-amber-800
                   {% elif order.status == 'accepted' %} bg-blue-100 text-blue-800
-                  {% elif order.status == 'delivering' %} bg-violet-100 text-violet-800
-                  {% elif order.status == 'delivered' %} bg-emerald-100 text-emerald-800
-                  {% elif order.status == 'cancelled' %} bg-rose-100 text-rose-800
-                  {% else %} bg-slate-100 text-slate-700 {% endif %}">
+                  {% elif order.status == 'picked_up' or order.status == 'delivering' %} bg-violet-100 text-violet-800
+                  {% elif order.status == 'delivered' or order.status == 'received' %} bg-emerald-100 text-emerald-800
+                  {% elif order.status.startswith('cancelled') or order.status == 'rejected_by_courier' %} bg-rose-100 text-rose-800
+                  {% else %} bg-slate-100 text-slate-700 {% endif %}>
                   {{ order.status_label or order.status }}
                 </span>
               </div>
@@ -149,7 +149,8 @@
               {% endfor %}
             </div>
 
-            <form method="post" action="{{ request.url_for('courier_order_message_send', order_id=order.id) }}" class="mt-4 flex flex-col gap-3 sm:flex-row">
+            {% if order.status not in ['created', 'pending_courier'] %}
+            <form method="post" action="{{ request.url_for('order_message_send', order_id=order.id) }}" class="mt-4 flex flex-col gap-3 sm:flex-row">
               <input
                 type="text"
                 name="text"
@@ -162,6 +163,11 @@
                 Отправить
               </button>
             </form>
+            {% else %}
+            <div class="mt-4 rounded-2xl border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-500">
+              Чат доступен после принятия заказа.
+            </div>
+            {% endif %}
           </section>
         </div>
       </article>

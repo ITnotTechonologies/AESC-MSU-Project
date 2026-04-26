@@ -43,6 +43,9 @@
         <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'orders' in current_path %}bg-slate-100{% endif %}" href="{{ request.url_for('order_create') }}">Оформить</a>
         <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'profile' in current_path %}bg-slate-100{% endif %}" href="{{ request.url_for('profile') }}">Профиль</a>
         <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'chat' in current_path %}bg-slate-100{% endif %}" href="{{ request.url_for('chat') }}">Чат</a>
+        {% if user and user.role_value == 'courier' %}
+        <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'courier/orders' in current_path %}bg-slate-100{% endif %}" href="{{ request.url_for('courier_orders') }}">Курьеру</a>
+        {% endif %}
       </nav>
 
       <div class="flex items-center gap-2">
@@ -71,6 +74,9 @@
         <a href="{{ request.url_for('catalog') }}" class="hover:text-slate-900">Каталог</a>
         <a href="{{ request.url_for('profile') }}" class="hover:text-slate-900">Профиль</a>
         <a href="{{ request.url_for('chat') }}" class="hover:text-slate-900">Чат</a>
+        {% if user and user.role_value == 'courier' %}
+        <a href="{{ request.url_for('courier_orders') }}" class="hover:text-slate-900">Курьеру</a>
+        {% endif %}
       </div>
     </div>
   </footer>
