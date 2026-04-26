@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}Заказы курьера{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-6xl space-y-6">
+  <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="text-sm text-slate-500">Личный кабинет курьера</p>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Назначенные заказы</h1>
+        <p class="mt-2 text-sm text-slate-600">Принятие заказа, смена статуса и чат по каждому заказу.</p>
+      </div>
+
+      <div class="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+        Всего заказов: <span class="font-semibold text-slate-900">{{ orders|length }}</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="space-y-6">
+    {% for order in orders %}
+      <article class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <div class="border-b border-slate-200 p-5 sm:p-6">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div class="space-y-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <h2 class="text-lg font-semibold text-slate-900">Заказ #{{ order.id }}</h2>
+
+                <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold
+                  {% if order.status == 'created' %} bg-amber-100 text-amber-800
+                  {% elif order.status == 'accepted' %} bg-blue-100 text-blue-800
+                  {% elif order.status == 'delivering' %} bg-violet-100 text-violet-800
+                  {% elif order.status == 'delivered' %} bg-emerald-100 text-emerald-800
+                  {% elif order.status == 'cancelled' %} bg-rose-100 text-rose-800
+                  {% else %} bg-slate-100 text-slate-700 {% endif %}">
+                  {{ order.status_label or order.status }}
+                </span>
+              </div>
+
+              <p class="text-sm text-slate-600">
+                Клиент: <span class="font-medium text-slate-900">{{ order.client_name }}</span>
+              </p>
+              <p class="text-sm text-slate-600">
+                Точка доставки: <span class="font-medium text-slate-900">{{ order.delivery_point }}</span>
+              </p>
+              <p class="text-sm text-slate-600">
+                Создан: <span class="font-medium text-slate-900">{{ order.created_at }}</span>
+              </p>
+              <p class="text-sm text-slate-600">
+                Сумма: <span class="font-medium text-slate-900">{{ order.total_price }} ₽</span>
+              </p>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+              {% if order.status == 'created' %}
+                <form method="post" action="{{ request.url_for('courier_order_accept', order_id=order.id) }}">
+                  <button type="submit" class="rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800">
+                    Принять
+                  </button>
+                </form>
+                <form method="post" action="{{ request.url_for('courier_order_reject', order_id=order.id) }}">
+                  <button type="submit" class="rounded-2xl border border-rose-200 px-4 py-2.5 text-sm font-semibold text-rose-700 transition hover:bg-rose-50">
+                    Отклонить
+                  </button>
+                </form>
+              {% endif %}
+
+              {% if order.status == 'accepted' %}
+                <form method="post" action="{{ request.url_for('courier_order_mark_delivering', order_id=order.id) }}">
+                  <button type="submit" class="rounded-2xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700">
+                    Доставляю
+                  </button>
+                </form>
+              {% endif %}
+
+              {% if order.status in ['accepted', 'delivering'] %}
+                <form method="post" action="{{ request.url_for('courier_order_mark_delivered', order_id=order.id) }}">
+                  <button type="submit" class="rounded-2xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700">
+                    Доставил
+                  </button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-0 lg:grid-cols-2">
+          <section class="border-b border-slate-200 p-5 sm:p-6 lg:border-b-0 lg:border-r">
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Состав заказа</h3>
+
+            <div class="mt-4 space-y-3">
+              {% for item in order.items %}
+                <div class="flex items-start justify-between gap-4 rounded-2xl bg-slate-50 p-4">
+                  <div>
+                    <p class="font-medium text-slate-900">{{ item.product_name }}</p>
+                    <p class="mt-1 text-sm text-slate-500">Количество: {{ item.quantity }}</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-semibold text-slate-900">{{ item.line_total }} ₽</p>
+                    <p class="text-xs text-slate-500">{{ item.price_snapshot }} ₽ за шт.</p>
+                  </div>
+                </div>
+              {% else %}
+                <div class="rounded-2xl border border-dashed border-slate-300 p-5 text-sm text-slate-500">
+                  В заказе пока нет позиций.
+                </div>
+              {% endfor %}
+            </div>
+          </section>
+
+          <section class="p-5 sm:p-6">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Чат по заказу</h3>
+                <p class="mt-1 text-sm text-slate-500">Клиент, курьер и системные уведомления</p>
+              </div>
+
+              <a href="{{ request.url_for('order_detail', order_id=order.id) }}" class="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                Полный чат
+              </a>
+            </div>
+
+            <div class="mt-4 max-h-[26rem] space-y-3 overflow-y-auto rounded-3xl bg-slate-50 p-4">
+              {% for message in order.messages %}
+                <div class="flex {% if message.kind == 'system' %}justify-center{% elif message.is_mine %}justify-end{% else %}justify-start{% endif %}">
+                  {% if message.kind == 'system' %}
+                    <div class="rounded-full bg-slate-200 px-4 py-2 text-xs font-medium text-slate-700">
+                      {{ message.text }}
+                      <span class="ml-2 text-slate-500">{{ message.created_at }}</span>
+                    </div>
+                  {% else %}
+                    <div class="max-w-[85%] rounded-3xl px-4 py-3 shadow-sm {% if message.is_mine %}bg-slate-900 text-white{% else %}bg-white text-slate-900{% endif %}">
+                      <div class="flex items-center justify-between gap-4">
+                        <p class="text-sm font-medium">
+                          {% if message.is_mine %}Вы{% else %}{{ message.sender_name }}{% endif %}
+                        </p>
+                        <p class="text-xs {% if message.is_mine %}text-slate-300{% else %}text-slate-500{% endif %}">
+                          {{ message.created_at }}
+                        </p>
+                      </div>
+                      <p class="mt-2 whitespace-pre-wrap text-sm leading-6">{{ message.text }}</p>
+                    </div>
+                  {% endif %}
+                </div>
+              {% else %}
+                <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-500">
+                  Сообщений пока нет.
+                </div>
+              {% endfor %}
+            </div>
+
+            <form method="post" action="{{ request.url_for('courier_order_message_send', order_id=order.id) }}" class="mt-4 flex flex-col gap-3 sm:flex-row">
+              <input
+                type="text"
+                name="text"
+                required
+                maxlength="1000"
+                placeholder="Написать сообщение клиенту..."
+                class="min-w-0 flex-1 rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-slate-400"
+              />
+              <button type="submit" class="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+                Отправить
+              </button>
+            </form>
+          </section>
+        </div>
+      </article>
+    {% else %}
+      <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">
+        У вас пока нет назначенных заказов.
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

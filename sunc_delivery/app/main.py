@@ -4,7 +4,8 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.core.config import settings
-from app.api import auth, views
+from app.api import auth, views, orders
+from app.api.endpoints import router as endpoints_router
 
 app = FastAPI(title="SUNC Delivery")
 
@@ -23,3 +24,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(views.router, tags=["pages"])
+app.include_router(orders.router, tags=["orders"])
+
+
+app.include_router(endpoints_router)

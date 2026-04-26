@@ -16,6 +16,41 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from app.db.database import Base
+import enum
+
+class MessageType(str, enum.Enum):
+    user = "user"
+    system = "system"
+
+
+class SystemEventType(str, enum.Enum):
+    order_created = "order_created"
+    courier_assigned = "courier_assigned"
+    courier_accepted = "courier_accepted"
+    courier_rejected = "courier_rejected"
+    order_picked_up = "order_picked_up"
+    order_delivering = "order_delivering"
+    order_delivered = "order_delivered"
+    order_received = "order_received"
+    order_cancelled = "order_cancelled"
+    status_changed = "status_changed"
+
+class Message(Base):
+    __tablename__ = "messages"
+
+    id = Column(Integer, primary_key=True)
+    order_id = Column(Integer, ForeignKey("orders.id", ondelete="CASCADE"), nullable=False)
+    sender_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    receiver_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    type = Column(Enum(MessageType), nullable=False, default=MessageType.user)
+    system_event = Column(Enum(SystemEventType), nullable=True)
+    text = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    read_at = Column(DateTime(timezone=True), nullable=True)
+
+    order = relationship("Order", back_populates="messages")
+    sender = relationship("User", foreign_keys=[sender_id])
+    receiver = relationship("User", foreign_keys=[receiver_id])
 
 
 class UserRole(str, enum.Enum):
@@ -84,7 +119,7 @@ class Order(Base):
     delivery_point = Column(String, nullable=False)
     total_price = Column(Numeric(10, 2), nullable=False, default=0.00)
     comment = Column(Text, nullable=True)
-
+    messages = relationship("Message", back_populates="order", cascade="all, delete-orphan")
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(
         DateTime(timezone=True),
