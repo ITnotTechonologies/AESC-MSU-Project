@@ -288,7 +288,11 @@ def _latest_accessible_order(db: Session, user: User) -> Order | None:
 
 
 def _order_context(request, order, user, can_confirm_receipt=False) -> dict:
-    messages = [_serialize_message(message, current_user) for message in sorted(order.messages, key=lambda message: message.created_at or _now())]
+    messages = [
+        _serialize_message(message, user)
+        for message in sorted(order.messages, key=lambda message: message.created_at or _now())
+    ]
+
     items = [
         {
             'product_name': item.product.name if item.product else f'Товар #{item.product_id}',
@@ -298,16 +302,16 @@ def _order_context(request, order, user, can_confirm_receipt=False) -> dict:
         }
         for item in order.items
     ]
+
     return {
         'request': request,
-        'user': current_user,
-        'user_role': current_user.role_value,
-        'can_confirm_receipt': current_user.role_value == 'admin' or order.user_id == current_user.id,
-        'is_assigned_courier': _courier_user_id(order) == current_user.id,
+        'user': user,
+        'user_role': user.role_value,
+        'can_confirm_receipt': user.role_value == 'admin' or order.user_id == user.id,
+        'is_assigned_courier': _courier_user_id(order) == user.id,
         'order': _serialize_order(order),
         'messages': messages,
         'items': items,
-        "user_role": user.role_value,
     }
 
 

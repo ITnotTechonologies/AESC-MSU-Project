@@ -24,7 +24,27 @@
             <div class="mt-1 text-lg font-semibold text-slate-900">#{{ order.id }}</div>
             <div class="mt-1 text-sm text-slate-600">Точка доставки: {{ order.delivery_point }}</div>
           </div>
-          <div data-chat-status class="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold"></div>
+          <div data-chat-status class="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold">
+            {% if user and user.role_value == 'courier' and order %}
+  <div class="mt-4 flex flex-wrap gap-2">
+    {% if order.status == 'created' %}
+      <form method="post" action="{{ request.url_for('courier_order_accept', order_id=order.id) }}">
+        <button type="submit" class="rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800">
+          Принять заказ
+        </button>
+      </form>
+    {% endif %}
+
+    {% if order.status in ['accepted', 'delivering'] %}
+      <form method="post" action="{{ request.url_for('courier_order_mark_delivered', order_id=order.id) }}">
+        <button type="submit" class="rounded-2xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700">
+          Доставил
+        </button>
+      </form>
+    {% endif %}
+  </div>
+{% endif %}
+          </div>
         </div>
       </div>
     {% endif %}
