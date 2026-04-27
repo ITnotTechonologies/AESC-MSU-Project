@@ -39,6 +39,7 @@
 
       <nav class="hidden items-center gap-1 md:flex">
         <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if current_path == '/' %}bg-slate-100{% endif %}" href="{{ request.url_for('home') }}">Главная</a>
+        <a class = "rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'about' in current_path %}bg-slate-100{% endif %}" href="{{ request.url_for('about') }}">О нас</a>
         <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'catalog' in current_path %}bg-slate-100{% endif %}" href="{{ request.url_for('catalog') }}">Каталог</a>
         <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'orders' in current_path %}bg-slate-100{% endif %}" href="{{ request.url_for('order_create') }}">Оформить</a>
         <a class="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-slate-100 {% if 'profile' in current_path %}bg-slate-100{% endif %}" href="{{ request.url_for('profile') }}">Профиль</a>
@@ -71,6 +72,7 @@
       <div>© {{ now.year if now else "" }} Доставка СУНЦ</div>
       <div class="flex flex-wrap gap-4">
         <a href="{{ request.url_for('home') }}" class="hover:text-slate-900">Главная</a>
+        <a href="{{ request.url_for('about') }}" class="hover:text-slate-900">О нас</a>
         <a href="{{ request.url_for('catalog') }}" class="hover:text-slate-900">Каталог</a>
         <a href="{{ request.url_for('profile') }}" class="hover:text-slate-900">Профиль</a>
         <a href="{{ request.url_for('chat') }}" class="hover:text-slate-900">Чат</a>

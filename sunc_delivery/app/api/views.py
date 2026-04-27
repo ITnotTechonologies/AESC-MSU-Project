@@ -33,6 +33,91 @@ def not_found_page(request: Request):
         status_code=404,
     )
 
+
+
+
+
+from fastapi import APIRouter, Request
+from fastapi.responses import HTMLResponse
+
+router = APIRouter()
+
+
+@router.get("/about", response_class=HTMLResponse, name="about")
+def about(request: Request):
+    team_members = [
+        {
+            "name": "Трофименко Иван",
+            "role": "Сделал сайт",
+            "photo": "static/img/about/photo_2026-04-27_23-20-37.jpg",
+            "achievements": [
+                "Призёр ВсОШ ИИ 2025/2026",
+                "C1 in English",
+                "Опыт в олимпиадном программировании и математике",
+            ],
+        },
+        {
+            "name": "Егор Юренков",
+            "role": "Отвечал за хорошее настроение в команде",
+            "photo": "static/img/about/photo_2026-04-27_23-07-44.jpg",
+            "achievements": [
+                "собрал плейлист мешапов на 48 часов",
+                "мастер объедения жигулей и столбов",
+                "если сильно захочу, могу добиться того,чтобы Довбыш ушел сам",
+            ],
+        },
+        {
+            "name": "Леонид Глазырин",
+            "role": "QA / Integration",
+            "photo": "static/img/about/photo_2026-04-27_23-20-51.jpg",
+            "achievements": [
+                "Стал призером 4х олимпиад первого уровня по физике",
+                "Огромный опыт в перекупстве",
+                "10000 часов в тиктоке",
+            ],
+        },
+    ]
+
+    couriers = [
+        {
+            "name": "Немытый Физик",
+            "photo": "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=900&q=80",
+            "description": "Быстрый и аккуратный, держит связь в чате и не теряет заказы.",
+        },
+        {
+            "name": "Немытый Айтишник",
+            "photo": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=900&q=80",
+            "description": "Хорошо ориентируется по территории СУНЦ и быстро подтверждает статус заказа.",
+        },
+        {
+            "name": "Немытый Казах",
+            "photo": "https://images.unsplash.com/photo-1521119989659-a83eee488004?auto=format&fit=crop&w=900&q=80",
+            "description": "Вежливый, аккуратный и всегда отвечает на системные уведомления.",
+        },
+
+        {
+            "name": "Немытый Темщик",
+            "photo": "https://images.unsplash.com/photo-1521119989659-a83eee488004?auto=format&fit=crop&w=900&q=80",
+            "description": "Вежливый, аккуратный и всегда отвечает на системные уведомления.",
+        },
+
+        {
+            "name": "Немытый Англичанин",
+            "photo": "https://images.unsplash.com/photo-1521119989659-a83eee488004?auto=format&fit=crop&w=900&q=80",
+            "description": "Вежливый, аккуратный и всегда отвечает на системные уведомления.",
+        },
+    ]
+
+    return request.app.state.templates.TemplateResponse(
+        request=request,
+        name="pages/about.html",
+        context={
+            "request": request,
+            "team_members": team_members,
+            "couriers": couriers,
+        },
+    )
+
 def _now() -> datetime:
     return datetime.now(timezone.utc)
 
