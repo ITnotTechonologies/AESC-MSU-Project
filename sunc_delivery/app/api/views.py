@@ -186,6 +186,7 @@ def _serialize_order(order: Order) -> dict:
         'total_price': order.total_price,
         'created_at': _format_dt(order.created_at),
         'updated_at': _format_dt(order.updated_at),
+        'courier_id': order.courier_id,
     }
 
 

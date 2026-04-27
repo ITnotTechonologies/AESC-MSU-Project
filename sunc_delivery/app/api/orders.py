@@ -1,3 +1,9 @@
+# Legacy code
+
+raise RuntimeError(
+    "app/api/orders.py отключён. Используйте app/api/views.py как единственный source of truth."
+)
+
 from __future__ import annotations
 
 from datetime import datetime, timezone

@@ -92,6 +92,7 @@ def order_poll(
 
     return {
         "order": {
+            "courier_id": order.courier_id,
             "id": order.id,
             "status": order_status,
             "status_label": _order_status_label(order_status),
