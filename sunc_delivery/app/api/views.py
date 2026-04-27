@@ -25,6 +25,13 @@ from app.db.models import (
 
 router = APIRouter()
 
+@router.get("/404", response_class=HTMLResponse, name="not_found_page")
+def not_found_page(request: Request):
+    return request.app.state.templates.TemplateResponse(
+        "pages/404.html",
+        {"request": request},
+        status_code=404,
+    )
 
 def _now() -> datetime:
     return datetime.now(timezone.utc)

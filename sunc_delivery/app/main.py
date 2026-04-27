@@ -1,11 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.core.config import settings
 from app.api import auth, views
-from app.api.endpoints import router as endpoints_router
 
 app = FastAPI(title="SUNC Delivery")
 
@@ -21,8 +22,17 @@ app.add_middleware(
 )
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(views.router, tags=["pages"])
 
-app.include_router(endpoints_router)
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    if exc.status_code == 404:
+        return templates.TemplateResponse(
+            request=request,
+            name="pages/404.html",
+            context={"request": request},
+            status_code=404,
+        )
+    return PlainTextResponse(str(exc.detail), status_code=exc.status_code)
