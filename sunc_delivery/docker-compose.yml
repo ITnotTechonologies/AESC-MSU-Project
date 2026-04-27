@@ -1,28 +1,39 @@
-
-
 services:
   db:
     image: postgres:15
     container_name: sunc_db
-    restart: always
     environment:
-      POSTGRES_DB: sunc_delivery
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sunc_delivery
     ports:
       - "5432:5432"
     volumes:
-    - ./db_init/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
-    - ./db_init/02_seed_products.sql:/docker-entrypoint-initdb.d/02_seed_products.sql:ro
+      - ./db_init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sunc_delivery"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  import_images:
+    build: .
+    container_name: sunc_import_images
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["python", "scripts/import_product_images.py", "--csv", "data/5ka_seed_images_fallback.csv", "--apply"]
+    restart: "no"
 
   app:
     build: .
+    container_name: sunc_app
+    env_file:
+      - .env
     depends_on:
-      - db
+      import_images:
+        condition: service_completed_successfully
     ports:
       - "8000:8000"
-    environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/sunc_delivery
-
-volumes:
-  postgres_data:
