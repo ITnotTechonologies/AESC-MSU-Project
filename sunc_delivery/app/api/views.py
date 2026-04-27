@@ -287,7 +287,7 @@ def _latest_accessible_order(db: Session, user: User) -> Order | None:
     return query.filter(Order.user_id == user.id).first()
 
 
-def _order_context(request: Request, order: Order, current_user: User) -> dict:
+def _order_context(request, order, user, can_confirm_receipt=False) -> dict:
     messages = [_serialize_message(message, current_user) for message in sorted(order.messages, key=lambda message: message.created_at or _now())]
     items = [
         {
@@ -307,6 +307,7 @@ def _order_context(request: Request, order: Order, current_user: User) -> dict:
         'order': _serialize_order(order),
         'messages': messages,
         'items': items,
+        "user_role": user.role_value,
     }
 
 
@@ -628,13 +629,22 @@ def order_detail(
     order = _get_order_or_404(db, order_id)
     _require_access(user, order)
 
+    status_value = order.status.value if hasattr(order.status, "value") else str(order.status)
+
+    can_confirm_receipt = (
+        user.role_value == "client"
+        and order.user_id == user.id
+        and status_value == "delivered"
+    )
+
+    context = _order_context(request, order, user)
+    context["can_confirm_receipt"] = can_confirm_receipt
+    context["user_role"] = user.role_value
     return request.app.state.templates.TemplateResponse(
         request=request,
         name='pages/order_detail.html',
-        context=_order_context(request, order, user),
+        context=context,
     )
-
-
 @router.get('/orders/{order_id}/track', response_class=HTMLResponse, name='order_track')
 def order_track(
     request: Request,
@@ -752,7 +762,7 @@ def courier_orders(
                 'delivery_point': order.delivery_point,
                 'created_at': _format_dt(order.created_at),
                 'total_price': order.total_price,
-                'items': [
+                'order_items': [
                     {
                         'product_name': item.product.name if item.product else f'Товар #{item.product_id}',
                         'quantity': item.quantity,
